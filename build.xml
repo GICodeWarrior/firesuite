@@ -1,0 +1,75 @@
+<project name="firesuite" default="jar" basedir=".">
+  <description>
+  <![CDATA[
+    Firesuite is a parallel junit test suite builder.  You can customize the
+    concurrency level of the generated suite and via the TestFilter interface
+    create very fine grained rules for determining what tests are included.
+  ]]>
+  </description>
+
+  <taskdef resource="net/sf/ant4eclipse/antlib.xml"
+           classpath="${basedir}/third-party/ant4eclipse-0.5.0.rc1.jar"/>
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+           classpath="${basedir}/third-party/ant-contrib-1.0b3.jar"/>
+
+  <property name="project.version" value="0.1.0" />
+  <property name="project.jar"
+            value="${basedir}/firesuite-${project.version}.jar" />
+
+  <property name="test.output" value="plain" />
+  <property name="test.src" value="${basedir}/test/src" />
+  <property name="test.classfiles" value="${test.src}/**/*Test.java" />
+  <property name="test.reports" value="${basedir}/test/reports" />
+
+  <target name="init">
+    <tstamp/>
+    <getSourcepath property="project.sourcepath" project="${basedir}"
+                   allowMultipleFolders="true" />
+    <getOutputpath property="project.outputpath" project="${basedir}" />
+    <getEclipseClasspath pathId="project.classpath" project="${basedir}" />
+  </target>
+
+  <target name="build" depends="init">
+    <mkdir dir="${project.outputpath}"/>
+    <foreach list="${project.sourcepath}" delimiter="#" target="compile.single"
+             param="source" inheritall="true" inheritrefs="true" />
+  </target>
+
+  <target name="compile.single">
+    <javac classpathref="project.classpath" srcdir="${source}"
+           destdir="${project.outputpath}" deprecation="yes" debug="true">
+      <compilerarg value="-Xlint"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="build">
+    <jar destfile="${project.jar}" basedir="${project.outputpath}">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="test" depends="build">
+    <mkdir dir="${test.reports}"/>
+    <junit printsummary="yes">
+      <classpath>
+        <path refid="project.classpath" />
+      </classpath>
+
+      <formatter type="${test.output}"/>
+
+      <batchtest fork="yes" todir="${test.reports}">
+        <fileset dir="${test.src}">
+          <include name="${test.classfiles}"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+  <target name="clean" depends="init" description="clean up" >
+    <delete dir="${test.reports}"/>
+    <delete dir="${project.outputpath}"/>
+    <delete file="${project.jar}"/>
+  </target>
+</project>

@@ -1,0 +1,6 @@
+*.sw?
+.DS_Store
+
+/firesuite-*.jar
+/bin/
+/test/reports/
