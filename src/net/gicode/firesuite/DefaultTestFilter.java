@@ -27,7 +27,7 @@ import java.lang.reflect.Method;
  */
 public class DefaultTestFilter implements TestFilter {
 
-  private String packageRoot;
+  private final String packageRoot;
 
   public DefaultTestFilter(String packageRoot) {
     this.packageRoot = packageRoot;
@@ -46,6 +46,6 @@ public class DefaultTestFilter implements TestFilter {
 
   @Override
   public String getPackageRoot() {
-    return packageRoot;
+    return this.packageRoot;
   }
 }

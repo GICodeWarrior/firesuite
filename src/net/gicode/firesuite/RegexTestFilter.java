@@ -27,8 +27,8 @@ import java.util.regex.Pattern;
  */
 public class RegexTestFilter extends DefaultTestFilter {
 
-  private Pattern classPattern;
-  private Pattern methodPattern;
+  private final Pattern classPattern;
+  private final Pattern methodPattern;
 
   /**
    * @param packageRoot The package name to search under.
@@ -47,19 +47,19 @@ public class RegexTestFilter extends DefaultTestFilter {
                          String methodRegex) {
     super(packageRoot);
 
-    classPattern = Pattern.compile(classRegex);
-    methodPattern = (methodRegex != null) ? Pattern.compile(methodRegex)
+    this.classPattern = Pattern.compile(classRegex);
+    this.methodPattern = (methodRegex != null) ? Pattern.compile(methodRegex)
         : Pattern.compile("");
   }
 
   @Override
   public boolean includeClass(Class<?> testClass) {
-    return classPattern.matcher(testClass.getCanonicalName()).find();
+    return this.classPattern.matcher(testClass.getCanonicalName()).find();
   }
 
   @Override
   public boolean includeMethod(Method testMethod) {
-    return methodPattern.matcher(testMethod.getName()).find()
+    return this.methodPattern.matcher(testMethod.getName()).find()
         && super.includeMethod(testMethod);
   }
 }
