@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import junit.extensions.ActiveTestSuite;
 import junit.framework.Test;
@@ -114,12 +115,14 @@ public class FireSuiteBuilder {
   private List<Class<TestCase>> findTestClasses() {
     ClassLoader classLoader = ClassLoader.getSystemClassLoader();
     String packageName = this.filter.getPackageRoot();
-    URL url = classLoader.getResource(packageName.replaceAll("\\.", "/"));
+    String packagePath = packageName.replaceAll("\\.", "/");
+    URL url = classLoader.getResource(packagePath);
 
+    String separatorRegex = Pattern.quote(File.separator);
     List<File> classFiles = findClassFiles(new File(url.getFile()));
     List<Class<TestCase>> testClasses = new LinkedList<Class<TestCase>>();
     for (File classFile : classFiles) {
-      String className = classFile.getPath().replaceAll("/", ".");
+      String className = classFile.getPath().replaceAll(separatorRegex, ".");
       className = className.substring(0, className.lastIndexOf(".class"));
       className = className.substring(className.indexOf(packageName));
 
