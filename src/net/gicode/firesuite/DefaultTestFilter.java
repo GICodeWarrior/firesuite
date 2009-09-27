@@ -20,9 +20,9 @@ package net.gicode.firesuite;
 import java.lang.reflect.Method;
 
 /**
- * This is a simple firesuite filter that will include all tests with the @Test
- * annotation in a given package.
- *
+ * This is a simple firesuite filter that will include all tests with names
+ * starting with "test" or with the @Test annotation and in the given package.
+ * 
  * @author rusty
  */
 public class DefaultTestFilter implements TestFilter {
@@ -34,18 +34,18 @@ public class DefaultTestFilter implements TestFilter {
   }
 
   @Override
-  public boolean filterClass(Class<?> testClass) {
-    return false;
+  public boolean includeClass(Class<?> testClass) {
+    return true;
   }
 
   @Override
-  public boolean filterMethod(Method testMethod) {
-    return testMethod.getAnnotation(org.junit.Test.class) == null;
+  public boolean includeMethod(Method testMethod) {
+    return testMethod.getName().startsWith("test")
+        || testMethod.getAnnotation(org.junit.Test.class) != null;
   }
 
   @Override
   public String getPackageRoot() {
     return packageRoot;
   }
-
 }

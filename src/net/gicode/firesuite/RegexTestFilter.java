@@ -21,9 +21,8 @@ import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 
 /**
- * Defines a filter to include only the matched by the provided regex for class
- * and (optionally) method.
- *
+ * Defines a filter to include based on the provided regex for class and method.
+ * 
  * @author rusty
  */
 public class RegexTestFilter extends DefaultTestFilter {
@@ -33,30 +32,34 @@ public class RegexTestFilter extends DefaultTestFilter {
 
   /**
    * @param packageRoot The package name to search under.
-   * @param regex A regex that matches the test classes to execute.
+   * @param classRegex A regex that matches the test classes to execute.
    */
-  public RegexTestFilter(String packageRoot, String class_regex) {
-    this(packageRoot, class_regex, null);
+  public RegexTestFilter(String packageRoot, String classRegex) {
+    this(packageRoot, classRegex, null);
   }
-  
-  public RegexTestFilter(String packageRoot, String classRegex, String methodRegex) {
+
+  /**
+   * @param packageRoot The package name to search under.
+   * @param classRegex A regex that matches the test classes to execute.
+   * @param methodRegex A regex that matches the test methods to execute.
+   */
+  public RegexTestFilter(String packageRoot, String classRegex,
+                         String methodRegex) {
     super(packageRoot);
+
     classPattern = Pattern.compile(classRegex);
-    methodPattern = (methodRegex != null) ?
-        Pattern.compile(methodRegex) : Pattern.compile("");
+    methodPattern = (methodRegex != null) ? Pattern.compile(methodRegex)
+        : Pattern.compile("");
   }
 
   @Override
-  public boolean filterClass(Class<?> testClass) {
-    return !classPattern.matcher(testClass.getCanonicalName()).find();
+  public boolean includeClass(Class<?> testClass) {
+    return classPattern.matcher(testClass.getCanonicalName()).find();
   }
 
   @Override
-  public boolean filterMethod(Method testMethod) {
-    if (!methodPattern.matcher(testMethod.getName()).find()){
-      return true;
-    }
-    return super.filterMethod(testMethod);
+  public boolean includeMethod(Method testMethod) {
+    return methodPattern.matcher(testMethod.getName()).find()
+        && super.includeMethod(testMethod);
   }
-
 }

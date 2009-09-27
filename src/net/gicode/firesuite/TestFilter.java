@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 /**
  * Implementations of this interface serve as a specification of test cases to
  * include in a firesuite.
- *
+ * 
  * @author rusty
  */
 public interface TestFilter {
@@ -30,28 +30,28 @@ public interface TestFilter {
   /**
    * Used to determine if the given Class should be included in the firesuite.
    * Only classes castable to TestCase will be provided for questioning.
-   *
+   * 
    * @param testClass The Class to make a decision about.
-   * @return true if the provided class should be excluded from the suite.
+   * @return true if the provided class should be included in the suite.
    */
-  public boolean filterClass(Class<?> testClass);
+  public boolean includeClass(Class<?> testClass);
 
   /**
    * Used to determine if the given Method should be included in the firesuite.
-   * All methods defined by unfiltered classes will be provided for questioning.
+   * All methods defined by included classes will be provided for questioning.
    * It is the implementors responsibility to determine if this method is even a
    * valid test method.
-   *
+   * 
    * @param testMethod The Method to make a decision about.
-   * @return true if the provided method should be excluded from the suite.
+   * @return true if the provided method should be included in the suite.
    */
-  public boolean filterMethod(Method testMethod);
+  public boolean includeMethod(Method testMethod);
 
   /**
    * This method must return a package name with at least one part, null and ""
    * are not valid. It is the implementors responsibility to make certain the
-   * package name is valid and exists in the runtime.
-   *
+   * package name is valid and exists in the runtime classpath.
+   * 
    * @return A valid package name.
    */
   public String getPackageRoot();
