@@ -20,6 +20,8 @@ package net.gicode.firesuite;
 import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 
+import junit.framework.TestCase;
+
 /**
  * Defines a filter to include based on the provided regex for class and method.
  * 
@@ -53,7 +55,7 @@ public class RegexTestFilter extends DefaultTestFilter {
   }
 
   @Override
-  public boolean includeClass(Class<?> testClass) {
+  public boolean includeClass(Class<TestCase> testClass) {
     return this.classPattern.matcher(testClass.getCanonicalName()).find();
   }
 

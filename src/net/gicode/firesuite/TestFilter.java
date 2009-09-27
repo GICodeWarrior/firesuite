@@ -19,6 +19,8 @@ package net.gicode.firesuite;
 
 import java.lang.reflect.Method;
 
+import junit.framework.TestCase;
+
 /**
  * Implementations of this interface serve as a specification of test cases to
  * include in a firesuite.
@@ -29,12 +31,11 @@ public interface TestFilter {
 
   /**
    * Used to determine if the given Class should be included in the firesuite.
-   * Only classes castable to TestCase will be provided for questioning.
    * 
    * @param testClass The Class to make a decision about.
    * @return true if the provided class should be included in the suite.
    */
-  public boolean includeClass(Class<?> testClass);
+  public boolean includeClass(Class<TestCase> testClass);
 
   /**
    * Used to determine if the given Method should be included in the firesuite.

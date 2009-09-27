@@ -20,6 +20,7 @@ package net.gicode.firesuite;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -70,23 +71,21 @@ public class FireSuiteBuilder {
    * @return The test suite ready to be executed.
    */
   public Test buildTestSuite() {
-    List<TestCase> testCases = new LinkedList<TestCase>();
+    List<TestCase> testCases = new ArrayList<TestCase>();
 
-    for (Class<?> testClass : findTestClasses()) {
-      if (TestCase.class.isAssignableFrom(testClass)) {
-        for (Method method : testClass.getDeclaredMethods()) {
-          if (this.filter.includeMethod(method)) {
-            TestCase test;
-            try {
-              test = (TestCase) testClass.newInstance();
-            } catch (InstantiationException e) {
-              throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-              throw new RuntimeException(e);
-            }
-            test.setName(method.getName());
-            testCases.add(test);
+    for (Class<TestCase> testClass : findTestClasses()) {
+      for (Method method : testClass.getDeclaredMethods()) {
+        if (this.filter.includeMethod(method)) {
+          TestCase test;
+          try {
+            test = testClass.newInstance();
+          } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+          } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
           }
+          test.setName(method.getName());
+          testCases.add(test);
         }
       }
     }
@@ -112,32 +111,39 @@ public class FireSuiteBuilder {
     return testSuites;
   }
 
-  private List<Class<?>> findTestClasses() {
+  private List<Class<TestCase>> findTestClasses() {
     ClassLoader classLoader = ClassLoader.getSystemClassLoader();
     String packageName = this.filter.getPackageRoot();
     URL url = classLoader.getResource(packageName.replaceAll("\\.", "/"));
 
     List<File> classFiles = findClassFiles(new File(url.getFile()));
-    List<Class<?>> testClasses = new LinkedList<Class<?>>();
+    List<Class<TestCase>> testClasses = new LinkedList<Class<TestCase>>();
     for (File classFile : classFiles) {
       String className = classFile.getPath().replaceAll("/", ".");
       className = className.substring(0, className.lastIndexOf(".class"));
       className = className.substring(className.indexOf(packageName));
 
-      Class<?> testClass;
+      Class<?> klass;
       try {
-        testClass = Class.forName(className);
+        klass = Class.forName(className);
       } catch (ClassNotFoundException e) {
         e.printStackTrace();
         continue;
       }
 
-      if (TestCase.class.isAssignableFrom(testClass)
-          && this.filter.includeClass(testClass)) {
-        testClasses.add(testClass);
+      if (TestCase.class.isAssignableFrom(klass)) {
+        Class<TestCase> testClass = castTestClass(klass);
+        if (this.filter.includeClass(testClass)) {
+          testClasses.add(testClass);
+        }
       }
     }
     return testClasses;
+  }
+
+  @SuppressWarnings("unchecked")
+  private Class<TestCase> castTestClass(Class<?> klass) {
+    return (Class<TestCase>) klass;
   }
 
   private List<File> findClassFiles(File directory) {

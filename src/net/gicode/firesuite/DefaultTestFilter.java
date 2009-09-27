@@ -19,6 +19,8 @@ package net.gicode.firesuite;
 
 import java.lang.reflect.Method;
 
+import junit.framework.TestCase;
+
 /**
  * This is a simple firesuite filter that will include all tests with names
  * starting with "test" or with the @Test annotation and in the given package.
@@ -34,7 +36,7 @@ public class DefaultTestFilter implements TestFilter {
   }
 
   @Override
-  public boolean includeClass(Class<?> testClass) {
+  public boolean includeClass(Class<TestCase> testClass) {
     return true;
   }
 
